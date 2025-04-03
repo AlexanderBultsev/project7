@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import PostDataService from "../services/post.service"
-import { withRouter } from "../wrappers/withRouter";
+import { withWrapper } from "../wrappers/withWrapper";
 
 
 class PostAdd extends Component {
@@ -49,7 +49,7 @@ class PostAdd extends Component {
           submitted: true
         });
         console.log(response.data);
-        this.props.router.navigate("/posts", { replace: true });
+        this.props.navigate("/posts", { replace: true });
       })
       .catch(e => {
         console.log(e);
@@ -79,4 +79,4 @@ class PostAdd extends Component {
 }
 
 
-export default withRouter(PostAdd);
+export default withWrapper(PostAdd);

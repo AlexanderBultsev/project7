@@ -1,18 +1,19 @@
 module.exports = (sequelize, Sequelize) => {
-  const Post = sequelize.define("post", {
-    title: {
+  const User = sequelize.define("user", {
+    username: {
+      type: Sequelize.STRING,
+      unique: true,
+      allowNull: false
+    },
+    password: {
       type: Sequelize.STRING,
       allowNull: false
     },
-    text: {
-      type: Sequelize.STRING,
-      allowNull: false
-    },
-    published: {
+    staff: {
       type: Sequelize.BOOLEAN,
       allowNull: false
     }
   });
 
-  return Post;
+  return User;
 };

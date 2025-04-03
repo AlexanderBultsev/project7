@@ -6,6 +6,9 @@ import Header from "./components/Header";
 import PostList from "./components/PostList";
 import PostAdd from "./components/PostAdd";
 import PostDetail from "./components/PostDetail";
+import Register from "./components/Register";
+import Login from "./components/Login";
+import Profile from "./components/Profile";
 
 const App = () => {
   return (
@@ -16,6 +19,9 @@ const App = () => {
         <Route path="/posts" element={<PostList/>} />
         <Route path="/add" element={<PostAdd/>} />
         <Route path="/posts/:id" element={<PostDetail/>} />
+        <Route path="/users/profile" element={<Profile/>} />
+        <Route path="/users/authorize" element={<Login/>} />
+        <Route path="/users/register" element={<Register/>} />
         <Route path="/*" element={<Navigate to="/" />} />
       </Routes>
     </main>

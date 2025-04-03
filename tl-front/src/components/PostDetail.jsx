@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import PostDataService from "../services/post.service"
-import { withRouter } from "../wrappers/withRouter";
+import { withWrapper } from "../wrappers/withWrapper";
 
 class PostDetail extends Component {
   constructor(props) {
@@ -24,7 +24,7 @@ class PostDetail extends Component {
   }
 
   componentDidMount() {
-    this.getPost(this.props.router.params.id);
+    this.getPost(this.props.params.id);
   }
 
   onChangeTitle(e) {
@@ -61,7 +61,7 @@ class PostDetail extends Component {
       })
       .catch(e => {
         console.log(e);
-        this.props.router.navigate("/posts", { replace: true });
+        this.props.navigate("/posts", { replace: true });
       });
   }
 
@@ -111,7 +111,7 @@ class PostDetail extends Component {
     PostDataService.delete(this.state.currentPost.id)
       .then(response => {
         console.log(response.data);
-        this.props.router.navigate("/posts", { replace: true });
+        this.props.navigate("/posts", { replace: true });
       })
       .catch(e => {
         console.log(e);
@@ -152,4 +152,4 @@ class PostDetail extends Component {
   }
 };
 
-export default withRouter(PostDetail);
+export default withWrapper(PostDetail);
