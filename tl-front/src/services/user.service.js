@@ -9,6 +9,10 @@ class UserDataService {
   authorize(data) {
     return http.post(`/users/authorize`, data);
   }
+
+  get(id) {
+    return http.get(`/users/${id}`);
+  }
 }
 
 const userDataService = new UserDataService();

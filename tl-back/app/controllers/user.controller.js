@@ -25,7 +25,7 @@ exports.register = (req, res) => {
   User.create(user)
     .then(data => {
       res.send({
-        message: "Registered successfully",
+        message: `Registered successfully`,
         user: {
           id: data.id,
           username: data.username,
@@ -35,7 +35,7 @@ exports.register = (req, res) => {
     })
     .catch(err => {
       res.status(500).send({
-        message: `Some error occurred while creating!\n${err}`
+        message: `Some error occurred while creating User!\n${err}`
       });
     });
 };
@@ -64,13 +64,13 @@ exports.authorize = (req, res) => {
     .then(data => {
     if (!data) {
       res.status(404).send({
-        message: "User Not found!"
+        message: `User Not found!`
       });
       return;
     }
     if (data.password == password) {
       res.send({
-        message: "Authorized successfully",
+        message: `Authorized successfully`,
         user: {
           id: data.id,
           username: data.username,
@@ -79,12 +79,39 @@ exports.authorize = (req, res) => {
       });
     } else {
       res.status(401).send({
-        message: "Invalid password!"
+        message: `Invalid password!`
       });
     }})
     .catch(err => {
       res.status(500).send({
-        message: `Error retrieving User!\n${err}`
+        message: `Some error occurred while retrieving User!\n${err}`
+      });
+    });
+};
+
+exports.findOne = (req, res) => {
+  const id = req.params.id;
+
+  User.findByPk(id, { include: ["posts"] })
+    .then(data => {
+      if (data) {
+        res.send({
+          user: {
+            id: data.id,
+            username: data.username,
+            staff: data.staff
+          },
+          posts: data.posts
+        });
+      } else {
+        res.status(404).send({
+          message: `User Not found!`
+        });
+      }
+    })
+    .catch(err => {
+      res.status(500).send({
+        message: `Some error occurred while retrieving User!\n${err}`
       });
     });
 };

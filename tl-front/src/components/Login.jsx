@@ -1,71 +1,66 @@
-import React, { Component } from "react";
+import React, { useState, useContext } from "react";
+import { Link, useNavigate } from "react-router-dom"
+
 import UserDataService from "../services/user.service";
-import { withWrapper } from "../wrappers/withWrapper";
+import { AuthContext } from "../AuthContext";
 
 
-class Login extends Component {
-  constructor(props) {
-    super(props);
-    this.onChangeUsername = this.onChangeUsername.bind(this);
-    this.onChangePassword = this.onChangePassword.bind(this);
-    this.login = this.login.bind(this);
+const Login = () => {
+  const { login } = useContext(AuthContext);
 
-    this.state = {
-      username: "",
-      password: ""
-    };
-  };
+  const [user, setUser] = useState({
+    username: "",
+    password: ""
+  });
 
-  onChangeUsername(e) {
-    this.setState({
+  const navigate = useNavigate();
+
+  const onChangeUsername = (e) => {
+    setUser(prevState => ({
+      ...prevState,
       username: e.target.value
-    });
+    }))
   }
 
-  onChangePassword(e) {
-    this.setState({
+  const onChangePassword = (e) => {
+    setUser(prevState => ({
+      ...prevState,
       password: e.target.value
-    });
+    }))
   }
 
-  login() {
-    var data = {
-      username: this.state.username,
-      password: this.state.password
-    };
-
-    UserDataService.authorize(data)
-      .then(response => {
-        this.props.login(response.data.user)
-        console.log(response.data);
-        this.props.navigate("/posts", { replace: true });
-      })
-      .catch(e => {
-        console.log(e);
-      });
+  const authorize = async () => {
+    try {
+      const response = await UserDataService.authorize(user);
+      console.log(response.data);
+      login(response.data.user);
+      navigate(`/users/${response.data.user.id}`, { replace: true });
+    } catch (error) {
+      console.error(error);
+      navigate("/", { replace: true });
+    }
   }
 
-  render() {
-    return (
-      <div className="container w-50 d-flex flex-column align-items-center gap-3">
-        <form className="card" onSubmit={(e) => {e.preventDefault()}}>
-          <div className="card-body d-flex flex-column gap-2">
-            <h5 className="card-title">Вход</h5>
-            <div className="form-group">
-              <label htmlFor="username" className="form-label">Имя пользователя</label>
-              <input type="text" className="form-control" id="username" name="username" required value={this.state.username} onChange={this.onChangeUsername} />
-            </div>
-            <div className="form-group">
-              <label htmlFor="password" className="form-label">Пароль</label>
-              <input type="password" className="form-control user-select-none" id="password" name="password" required value={this.state.password} onChange={this.onChangePassword} />
-            </div>
-            <button onClick={this.login} className="btn btn-success">Войти</button>
+  return (
+    <div className="container w-50 d-flex flex-column align-items-center gap-3">
+      <form className="card" onSubmit={(e) => {e.preventDefault()}}>
+        <div className="card-body d-flex flex-column gap-2">
+          <h5 className="card-title">Вход</h5>
+          <div className="form-group">
+            <label htmlFor="username" className="form-label">Имя пользователя</label>
+            <input type="text" className="form-control" id="username" name="username" required value={user.username} onChange={onChangeUsername} />
           </div>
-        </form>
-      </div>
-    );
-  }
+          <div className="form-group">
+            <label htmlFor="password" className="form-label">Пароль</label>
+            <input type="password" className="form-control user-select-none" id="password" name="password" required value={user.password} onChange={onChangePassword} />
+          </div>
+          <button onClick={authorize} className="btn btn-success">Войти</button>
+        </div>
+      </form>
+      <Link className="text-dark user-select-none" to="/users/register">Зарегистрироваться</Link>
+    </div>
+  )
 }
 
 
-export default withWrapper(Login)
+export default Login

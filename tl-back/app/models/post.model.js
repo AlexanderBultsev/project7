@@ -7,10 +7,6 @@ module.exports = (sequelize, Sequelize) => {
     text: {
       type: Sequelize.STRING,
       allowNull: false
-    },
-    published: {
-      type: Sequelize.BOOLEAN,
-      allowNull: false
     }
   });
 

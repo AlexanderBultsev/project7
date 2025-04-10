@@ -19,6 +19,7 @@ app.get("/", (req, res) => {
 });
 
 require("./app/routes/post.routes")(app);
+require("./app/routes/user.routes")(app);
 
 const db = require("./app/models");
 db.sequelize.sync()

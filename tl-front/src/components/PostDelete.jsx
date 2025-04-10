@@ -4,7 +4,7 @@ import { Link, useParams, useNavigate } from "react-router-dom";
 import PostDataService from "../services/post.service";
 import { AuthContext } from "../AuthContext";
 
-const PostDetail = () => {
+const PostDelete = () => {
   const { user } = useContext(AuthContext);
 
   const [isLoading, setIsLoading] = useState(true);
@@ -23,6 +23,9 @@ const PostDetail = () => {
 
   useEffect(() => {
     getPost(params.id);
+    if (!(user && (user.staff || user.id === author.id))) {
+      navigate("/posts", { replace: true });
+    }
   }, [params.id]);
 
   const getPost = async (id) => {
@@ -43,33 +46,39 @@ const PostDetail = () => {
     } catch (error) {
       console.error(error);
       navigate("/posts", { replace: true });
-    }  finally {
+    } finally {
       setIsLoading(false);
     }
   };
+
+  const deletePost = async () => {
+    try {
+      const response = await PostDataService.delete(post.id);
+      console.log(response.data)
+      navigate("/posts", { replace: true });
+    } catch (error) {
+      console.error(error);
+      navigate("/posts", { replace: true });
+    }
+  }
 
   return (
     <div className="container w-50 d-flex flex-column align-items-center gap-3">
       {isLoading ? (
         <div className="text-center">Загрузка...</div>
       ) : (
-        <article className="card">
-          <div className="card-body d-flex flex-column">
+        <form className="card" onSubmit={(e) => e.preventDefault()}>
+        <h5 className="card-header">Удалить статью</h5>
+          <div className="card-body d-flex flex-column gap-2">
             <h5 className="card-title">{post.title}</h5>
-            <Link className="card-text link-secondary" to={`/users/${author.id}`}>
-              @{author.username}
-            </Link>
             <p className="card-text">{post.text}</p>
-            {user && (user.staff || user.id === author.id) ? (
-              <Link className="btn btn-outline-success" to={`/posts/${post.id}/edit`}>
-                Редактировать
-              </Link>
-            ) : null}
+            <Link className="btn btn-outline-success" to={`/posts/${post.id}/edit`}>Отменить</Link>
+            <button className="btn btn-outline-danger" onClick={deletePost}>Удалить статью</button>
           </div>
-        </article>
+        </form>
       )}
     </div>
   );
-};
+}
 
-export default PostDetail;
+export default PostDelete;

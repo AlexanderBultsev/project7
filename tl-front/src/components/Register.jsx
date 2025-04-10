@@ -1,78 +1,77 @@
-import React, { Component } from "react";
+import React, { useState, useContext } from "react";
+import { useNavigate } from "react-router-dom"
+
 import UserDataService from "../services/user.service";
-import { withWrapper } from "../wrappers/withWrapper";
+import { AuthContext } from "../AuthContext";
 
 
-class Register extends Component {
-  constructor(props) {
-    super(props);
-    this.onChangeUsername = this.onChangeUsername.bind(this);
-    this.onChangePassword = this.onChangePassword.bind(this);
-    this.onChangeStaff = this.onChangeStaff.bind(this);
-    this.register = this.register.bind(this);
+const Register = () => {
+  const { login } = useContext(AuthContext);
+  
+  const [user, setUser] = useState({
+    username: "",
+    password: "",
+    staff: false
+  });
 
-    this.state = {
-      username: "",
-      password: "", 
-      staff: false
-    };
-  };
+  const navigate = useNavigate();
 
-  onChangeUsername(e) {
-    this.setState({
+  const onChangeUsername = (e) => {
+    setUser(prevState => ({
+      ...prevState,
       username: e.target.value
-    });
+    }))
   }
 
-  onChangePassword(e) {
-    this.setState({
+  const onChangePassword = (e) => {
+    setUser(prevState => ({
+      ...prevState,
       password: e.target.value
-    });
+    }))
   }
 
-  onChangeStaff(e) {
-    this.setState({
-      staff: !this.state.staff
-    });
+  const onChangeStaff = (e) => {
+    setUser(prevState => ({
+      ...prevState,
+      staff: !user.staff
+    }))
   }
 
-  register() {
-    UserDataService.register(this.state)
-      .then(response => {
-        this.props.login(response.data.user)
-        console.log(response.data);
-        this.props.navigate("/posts", { replace: true });
-      })
-      .catch(e => {
-        console.log(e);
-      });
+  const register = async () => {
+    try {
+      const response = await UserDataService.register(user);
+      console.log(response.data);
+      login(response.data.user);
+      navigate(`/users/${response.data.user.id}`, { replace: true });
+    } catch (error) {
+      console.error(error);
+      navigate("/", { replace: true });
+    }
   }
 
-  render() {
-    return (
-      <div className="container w-50 d-flex flex-column align-items-center gap-3">
-        <form className="card" onSubmit={(e) => {e.preventDefault()}}>
-          <div className="card-body d-flex flex-column gap-2">
-            <h5 className="card-title">Регистрация</h5>
-            <div className="form-group">
-              <label htmlFor="username" className="form-label">Имя пользователя</label>
-              <input type="text" className="form-control" id="username" name="username" required value={this.state.username} onChange={this.onChangeUsername} />
-            </div>
-            <div className="form-group">
-              <label htmlFor="password" className="form-label">Пароль</label>
-              <input type="password" className="form-control user-select-none" id="password" name="password" required value={this.state.password} onChange={this.onChangePassword} />
-            </div>
-            <div className="form-group form-check">
-              <input type="checkbox" className="form-check-input user-select-none" id="staff" name="staff" required value={this.state.staff} onChange={this.onChangeStaff} />
-              <label htmlFor="staff" className="form-check-label">Администратор</label>
-            </div>
-            <button onClick={this.register} className="btn btn-success">Зарегистрироваться</button>
+  return (
+    <div className="container w-50 d-flex flex-column align-items-center gap-3">
+      <form className="card" onSubmit={(e) => {e.preventDefault()}}>
+        <div className="card-body d-flex flex-column gap-2">
+          <h5 className="card-title">Регистрация</h5>
+          <div className="form-group">
+            <label htmlFor="username" className="form-label">Имя пользователя</label>
+            <input type="text" className="form-control" id="username" name="username" required value={user.username} onChange={onChangeUsername} />
           </div>
-        </form>
-      </div>
-    );
-  }
+          <div className="form-group">
+            <label htmlFor="password" className="form-label">Пароль</label>
+            <input type="password" className="form-control user-select-none" id="password" name="password" required value={user.password} onChange={onChangePassword} />
+          </div>
+          <div className="form-group form-check">
+            <input type="checkbox" className="form-check-input user-select-none" id="staff" name="staff" required value={user.staff} onChange={onChangeStaff} />
+            <label htmlFor="staff" className="form-check-label">Администратор</label>
+          </div>
+          <button onClick={register} className="btn btn-success">Зарегистрироваться</button>
+        </div>
+      </form>
+    </div>
+  );
 }
 
 
-export default withWrapper(Register)
+export default Register;

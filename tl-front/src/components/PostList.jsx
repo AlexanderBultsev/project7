@@ -1,38 +1,39 @@
-import React, { Component } from "react";
-import PostDataService from "../services/post.service"
-import { Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 
-class PostList extends Component {
-  constructor(props) {
-    super(props);
-    this.retrievePosts = this.retrievePosts.bind(this);
+import PostDataService from "../services/post.service";
 
-    this.state = {
-      posts: []
-    };
+
+const PostList = () => {
+  const [isLoading, setIsLoading] = useState(true);
+  const [posts, setPosts] = useState([]);
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    retrievePosts();
+  }, []);
+
+  const retrievePosts = async () => {
+    try {
+      setIsLoading(true);
+      const response = await PostDataService.getAll();
+      console.log(response.data);
+      setPosts(response.data);
+    } catch (error) {
+      console.error(error);
+      navigate("/", { replace: true });
+    } finally {
+      setIsLoading(false);
+    }
   }
 
-  componentDidMount() {
-    this.retrievePosts();
-  }
-
-  retrievePosts() {
-    PostDataService.getAll()
-      .then(response => {
-        this.setState({
-          posts: response.data
-        });
-        console.log(response.data);
-      })
-      .catch(e => {
-        console.log(e);
-      });
-  }
-
-  render() {
-    return (
-      <div className="container w-50 d-flex flex-column align-items-center gap-3">
-        {this.state.posts.map(post => (
+  return (
+    <div className="container w-50 d-flex flex-column align-items-center gap-3">
+      {isLoading ? (
+        <div className="text-center">Загрузка...</div>
+      ) : (
+        posts.map(post => (
           <article key={post.id} className="card">
             <div className="card-body d-flex flex-column">
               <h5 className="card-title">{post.title}</h5>
@@ -40,10 +41,10 @@ class PostList extends Component {
               <Link className="btn btn-outline-dark" to={"/posts/" + post.id}>Читать</Link>
             </div>
           </article>
-        ))}
-      </div>
-    )
-  }
+        ))
+      )}
+    </div>
+  )
 };
 
 

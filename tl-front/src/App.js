@@ -9,20 +9,28 @@ import PostDetail from "./components/PostDetail";
 import Register from "./components/Register";
 import Login from "./components/Login";
 import Profile from "./components/Profile";
+import PostEdit from "./components/PostEdit";
+import PostDelete from "./components/PostDelete";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 const App = () => {
+
   return (
     <main className="d-flex flex-column gap-3 min-vh-100">
       <Header />
       <Routes>
         <Route path="/" element={<PostList/>} />
         <Route path="/posts" element={<PostList/>} />
-        <Route path="/add" element={<PostAdd/>} />
         <Route path="/posts/:id" element={<PostDetail/>} />
-        <Route path="/users/profile" element={<Profile/>} />
         <Route path="/users/authorize" element={<Login/>} />
         <Route path="/users/register" element={<Register/>} />
-        <Route path="/*" element={<Navigate to="/" />} />
+
+        <Route path="/add" element={<ProtectedRoute><PostAdd/></ProtectedRoute>} />
+        <Route path="/users/:id" element={<ProtectedRoute><Profile/></ProtectedRoute>} />
+        <Route path="/posts/:id/edit" element={<ProtectedRoute><PostEdit/></ProtectedRoute>} />
+        <Route path="/posts/:id/delete" element={<ProtectedRoute><PostDelete/></ProtectedRoute>}/>
+        
+        <Route path="/*" element={<Navigate to="/" replace/>} />
       </Routes>
     </main>
   );
