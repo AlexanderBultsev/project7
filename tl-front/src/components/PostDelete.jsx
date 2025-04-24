@@ -23,10 +23,15 @@ const PostDelete = () => {
 
   useEffect(() => {
     getPost(params.id);
-    if (!(user && (user.staff || user.id === author.id))) {
-      navigate("/posts", { replace: true });
-    }
   }, [params.id]);
+
+  useEffect(() => {
+    if (!isLoading && author.id !== null && user) {
+      if (!(user && (user.staff || user.id === author.id))) {
+        navigate("/posts", { replace: true });
+      }
+    }
+  }, [author, user, isLoading]);
 
   const getPost = async (id) => {
     try {
